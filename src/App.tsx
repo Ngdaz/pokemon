@@ -31,7 +31,7 @@ function App() {
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <div className="h-screen">
+        <div className="flex flex-col h-screen">
           <div className={`flex w-100 h-[calc(100vh-100px)] p-10`}>
             <div className="w-1/2 ">
               <SearchPokemon
