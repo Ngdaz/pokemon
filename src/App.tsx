@@ -2,8 +2,8 @@ import { useState } from "react";
 import "./App.css";
 import Pagination from "./Pagination";
 import SearchPokemon from "./SearchPokemon";
-import { useListPokemon } from "./hook/useListPokemon";
-import { usePokemonDetail } from "./hook/usePokemonDetail";
+import { useListPokemon } from "./hooks/useListPokemon";
+import { usePokemonDetail } from "./hooks/usePokemonDetail";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
