@@ -18,11 +18,11 @@ interface PokemonListResponse {
 }
 
 function App() {
-  const [total, settotal] = useState(100);
   const limit = 100;
+  const [total, settotal] = useState(100);
   const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
   const [pokemonDetail, setPokemonDetail] = useState<PokemonDetail | null>(
-    null
+    null,
   );
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ function App() {
   const fetchPokemon = async () => {
     try {
       const response: AxiosResponse<PokemonListResponse> = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
+        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
       );
       setPokemonList(response.data.results);
       setLoading(false);
@@ -83,9 +83,11 @@ function App() {
   return (
     <div>
       {loading ? (
-        <div>Loading...</div>
+        <div>
+          <p className="text-black">Loading...</p>
+        </div>
       ) : (
-        <div className="h-screen">
+        <div className=" flex flex-col h-screen">
           <div className={`flex w-100 h-[calc(100vh-100px)] p-10`}>
             <div className="w-1/2 ">
               <SearchPokemon
@@ -113,7 +115,7 @@ function App() {
                     <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
                       <div className="max-w-md mx-auto">
                         <div className="flex justify-center">
-                          <div className="rounded-full bg-gray-200 h-32 w-32 flex items-center justify-center">
+                          <div className="rounded-full  h-32 w-32 flex items-center justify-center">
                             <img
                               src={pokemonDetail?.sprites.front_default}
                               alt="Pokemon Image"
@@ -153,7 +155,7 @@ function App() {
                                     {ability.ability.name}
                                     {ability.is_hidden ? " (Hidden)" : ""}
                                   </li>
-                                )
+                                ),
                               )}
                             </ul>
                           </div>
