@@ -36,3 +36,14 @@ export interface PokemonDetail {
   order: number;
   weight: number;
 }
+export interface Pokemon {
+  name: string;
+  url: string;
+}
+
+export interface PokemonListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Pokemon[];
+}

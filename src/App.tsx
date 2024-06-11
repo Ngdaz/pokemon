@@ -1,93 +1,37 @@
-import { useState, useEffect } from "react";
-import axios, { AxiosResponse } from "axios";
+import { useState } from "react";
 import "./App.css";
-import { PokemonDetail } from "./types";
 import Pagination from "./Pagination";
 import SearchPokemon from "./SearchPokemon";
-
-interface Pokemon {
-  name: string;
-  url: string;
-}
-
-interface PokemonListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Pokemon[];
-}
+import { useListPokemon } from "./hook/useListPokemon";
+import { usePokemonDetail } from "./hook/usePokemonDetail";
 
 function App() {
-  const limit = 100;
-  const [total, settotal] = useState(100);
-  const [pokemonList, setPokemonList] = useState<Pokemon[]>([]);
-  const [pokemonDetail, setPokemonDetail] = useState<PokemonDetail | null>(
-    null,
-  );
-  const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [loadingPokeDetail, setLoadingPokeDetail] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+
+  const {
+    total,
+    loading,
+    limit,
+    offset,
+    filteredList,
+    setOffset,
+    handlePrevious,
+    handleNext,
+  } = useListPokemon(100, searchValue);
+
+  const { pokemonDetail, loadingPokeDetail, getPokemonDetail } =
+    usePokemonDetail();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
   };
 
-  const fetchPokemon = async () => {
-    try {
-      const response: AxiosResponse<PokemonListResponse> = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
-      );
-      setPokemonList(response.data.results);
-      setLoading(false);
-      settotal(response.data.count);
-    } catch (error) {
-      console.error("Error fetching Pokémon:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPokemon();
-  }, [offset]);
-
-  useEffect(() => {
-    if (searchValue === "") {
-      fetchPokemon();
-    }
-    const newListPokemon = pokemonList.filter((pokemon) => {
-      return pokemon.name.includes(searchValue);
-    });
-
-    setPokemonList(newListPokemon);
-  }, [searchValue]);
-
-  const getPokemonDetail = async (url: string) => {
-    setLoadingPokeDetail(true);
-    setPokemonDetail(null);
-    try {
-      const res: AxiosResponse<PokemonDetail> = await axios.get(url);
-      const parseRes = JSON.parse(JSON.stringify(res.data));
-      setPokemonDetail(parseRes);
-      setLoadingPokeDetail(false);
-    } catch (error) {}
-  };
-
-  const handlePrevious = () => {
-    setOffset((prevOffset) => Math.max(prevOffset - limit, 0));
-  };
-
-  const handleNext = () => {
-    setOffset((prevOffset) => Math.min(prevOffset + limit, total - limit));
-  };
-
   return (
     <div>
       {loading ? (
-        <div>
-          <p className="text-black">Loading...</p>
-        </div>
+        <div>Loading...</div>
       ) : (
-        <div className=" flex flex-col h-screen">
+        <div className="h-screen">
           <div className={`flex w-100 h-[calc(100vh-100px)] p-10`}>
             <div className="w-1/2 ">
               <SearchPokemon
@@ -97,7 +41,7 @@ function App() {
               <div
                 className={`flex flex-col items-center w-full h-full overflow-auto`}
               >
-                {pokemonList.map((pokemon) => (
+                {filteredList.map((pokemon) => (
                   <button
                     onClick={() => getPokemonDetail(pokemon.url)}
                     className="btn mb-1 w-[200px]"
@@ -115,7 +59,7 @@ function App() {
                     <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
                       <div className="max-w-md mx-auto">
                         <div className="flex justify-center">
-                          <div className="rounded-full  h-32 w-32 flex items-center justify-center">
+                          <div className="rounded-full bg-gray-200 h-32 w-32 flex items-center justify-center">
                             <img
                               src={pokemonDetail?.sprites.front_default}
                               alt="Pokemon Image"
